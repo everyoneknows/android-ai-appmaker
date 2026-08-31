@@ -13,7 +13,7 @@
 ### 1. Termuxで貼る1行
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/20bac962e390e71c42ca4a7b32c43ef2e654267c/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/v0.1.0/setup.sh | bash
 ```
 
 setupはroot、sudo、Androidシステム領域、bootloaderを使わず、Termuxのホーム以下だけを変更します。完了すると `http://127.0.0.1:8765/` を開きます。LANには公開しません。
@@ -26,11 +26,11 @@ setupはroot、sudo、Androidシステム領域、bootloaderを使わず、Termu
 
 - Android Studio・Gradle・root・USBケーブル不要
 - Java compiler、aapt2、D8、zipalign、apksignerをTermux内へ取得して使う
-- `bin/appmaker`は公式Codex CLIがあればAI入口として使い、無ければ安全なサンプルテンプレートを生成
+- `bin/appmaker`は公式Codex CLIが利用可能・認証済みの場合だけAI生成を行う。利用不能時に自由入力を別アプリとして生成することはない
 - AI CLIは `APPMAKER_AI=codex` / `APPMAKER_AI=none` で差し替え可能
 - サンプルは通信権限なし、黒背景・白文字、通常のランチャーから起動可能
 
-公式Codex CLIは公式npmパッケージ `@openai/codex` の導入だけを試します。公式の対応表にTermux/Androidは含まれないため、導入に失敗しても第三者forkへ切り替えず、テンプレートモードで動作します。利用する場合はTermuxで `codex --login` を一度実行してください。
+公式Codex CLIは公式standalone installer、次に公式npmパッケージ `@openai/codex` の順で試します。Termux/Androidでの動作は実機確認が必要です。利用する場合はTermuxで `codex login`、状態確認は `codex login status` を使います。第三者forkは使用しません。
 
 ## 技術者向け
 
@@ -46,11 +46,13 @@ setup.sh -> scripts/termux-install.sh -> bin/appmaker
 
 ## 動作確認の状態
 
-Linux上でシェル構文、固定URLからの取得経路、127.0.0.1 Web UIを確認済みです。Android実機でのTermux、公式Codex CLI、APKインストールは未確認です。
+Linux上でシェル構文、固定URLからの取得経路、127.0.0.1 Web UIを確認済みです。Android実機でのAPKビルド・インストールは未確認です。
+
+Android 10 / ARM64のTermuxでは、公式standalone installer（`curl -fsSL https://chatgpt.com/codex/install.sh | sh`）でCodex CLI 0.151.0の導入と `codex login status` の実行を確認しました（未ログイン状態）。公式npm packageは、同端末のTermuxリポジトリミラーが利用できずNode.js/npmを導入できなかったため未確認です。第三者forkは使用していません。
 
 ## 上級者向け補助機能
 
-PCから接続したい場合だけ `connect.ps1` とTermux SSHを利用できます。初心者向けの通常手順では使用しません。
+PCから接続したい場合だけ、上級者向け追加手順として `connect.ps1` とTermux SSHを利用できます。初心者向けsetupではopensshを導入しません。
 
 ## Contributing
 
