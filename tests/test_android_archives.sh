@@ -12,7 +12,7 @@ grep -Fxq android-35/android.jar platform.list
 curl -fsSL --retry 3 -o build-tools.zip https://dl.google.com/android/repository/build-tools_r35_linux.zip
 printf '%s  %s\n' bd3a4966912eb8b30ed0d00b0cda6b6543b949d5ffe00bea54c04c81e1561d88 build-tools.zip | sha256sum -c - >/dev/null
 unzip -Z1 build-tools.zip > build-tools.list
-for path in android-15/lib/d8.jar; do
+for path in android-15/lib/d8.jar android-15/lib/apksigner.jar; do
   grep -Fxq "$path" build-tools.list
 done
 printf '%s\n' 'production Android archive checks passed'
