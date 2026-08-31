@@ -13,7 +13,7 @@
 ### 1. Termuxで貼る1行
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/3c0015cec9a523e76b63a0292d4346fdee5f7198/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/20bac962e390e71c42ca4a7b32c43ef2e654267c/setup.sh | bash
 ```
 
 setupはroot、sudo、Androidシステム領域、bootloaderを使わず、Termuxのホーム以下だけを変更します。完了すると `http://127.0.0.1:8765/` を開きます。LANには公開しません。
