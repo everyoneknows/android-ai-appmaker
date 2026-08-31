@@ -3,7 +3,7 @@ set -euo pipefail
 # Immutable bootstrap for the rc4 content commit.
 case "$(id -u)" in 0) echo 'rootでは実行しません。Termuxの通常ユーザーで実行してください。' >&2; exit 1;; esac
 [ -n "${PREFIX:-}" ] || { echo 'Termux上で実行してください。' >&2; exit 1; }
-DEFAULT_APPMAKER_REF="9cd663f62bc8cecd768711a4a1154166eb7c9b73"
+DEFAULT_APPMAKER_REF="5686877dbd8e1e8934af9c342779b2a32d81b0aa"
 APPMAKER_REF="${APPMAKER_REF:-$DEFAULT_APPMAKER_REF}"
 [ "${#APPMAKER_REF}" -eq 40 ] && printf '%s' "$APPMAKER_REF" | grep -Eq '^[0-9a-f]{40}$' || { echo 'APPMAKER_REFがimmutable commit SHAではありません。開発者向けoverrideを確認してください。' >&2; exit 1; }
 repo="${APPMAKER_REPO_URL:-https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/$APPMAKER_REF}"
