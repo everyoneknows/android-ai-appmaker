@@ -1,40 +1,26 @@
 # android-ai-appmaker
 
-## やることは3つだけです
+## Androidだけでアプリを作る
 
-1. Termuxを入れる
-2. スマホとPCへ、それぞれ1行コピペ
-3. AIに欲しいアプリを日本語で頼む
+1. AndroidへTermuxを入れる
+2. 下の1行をTermuxへ貼り付ける
+3. ブラウザで仕様を入力して「アプリを作る」を押す
 
-最初の例として、時計＋ストップウォッチを作ってみます。
+最初の例文は「ストップウォッチ機能付きの時計」です。
 
 > 公開版は確認済みコミットを固定参照します。
 
 ### 1. Termuxで貼る1行
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/ab25bfc/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/3c0015cec9a523e76b63a0292d4346fdee5f7198/setup.sh | bash
 ```
 
-setupはroot、sudo、Androidシステム領域、bootloaderを使わず、Termuxのホーム以下だけを変更します。SSHパスワードはTermuxが尋ねる場合だけ入力してください。OpenAIのログインやAPIキーは表示・保存・コミットしません。
+setupはroot、sudo、Androidシステム領域、bootloaderを使わず、Termuxのホーム以下だけを変更します。完了すると `http://127.0.0.1:8765/` を開きます。LANには公開しません。
 
-### 2. PCのPowerShellで貼る1行
+### Web UIで作成
 
-```powershell
-irm https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/ab25bfc/connect.ps1 | iex
-```
-
-同一Wi-Fiのプライベートネットワーク上で、Termux SSHの8022番ポートを探索して接続し、`appmaker`を起動します。Windows DefenderやWi-Fi分離設定によって探索できない場合は、表示された候補から選択できます。IPやポートを通常は手入力しません。
-
-### 3. 日本語で依頼
-
-接続後、例えば次のように入力します。
-
-```text
-ストップウォッチ機能付きの時計を作って
-```
-
-生成されたAPKは `~/android-ai-appmaker/out/` にあります。Androidの「不明なアプリのインストールを許可」は必要に応じて一度だけ設定し、APKをタップしてインストールします。
+ブラウザの入力欄は自由入力、貼り付け、例文ボタン、Gboard音声入力に対応します。生成・ビルド・署名が終わるとAPKをAndroidのインストール画面へ渡します。
 
 ## このプロトタイプの範囲
 
@@ -44,7 +30,7 @@ irm https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/ab25bfc/
 - AI CLIは `APPMAKER_AI=codex` / `APPMAKER_AI=none` で差し替え可能
 - サンプルは通信権限なし、黒背景・白文字、通常のランチャーから起動可能
 
-公式Codex CLIのTermux ARM64での実機動作は、このリポジトリの端末外検証だけでは保証していません。setupは公式コマンドを第一候補にしますが、失敗時はCLI無しのテンプレートモードでビルドできます。第三者forkは採用していません。
+公式Codex CLIは公式npmパッケージ `@openai/codex` の導入だけを試します。公式の対応表にTermux/Androidは含まれないため、導入に失敗しても第三者forkへ切り替えず、テンプレートモードで動作します。利用する場合はTermuxで `codex --login` を一度実行してください。
 
 ## 技術者向け
 
@@ -60,4 +46,8 @@ setup.sh -> scripts/termux-install.sh -> bin/appmaker
 
 ## 動作確認の状態
 
-この開発環境ではLinux上でサンプルAPKの生成を確認します。TermuxからAndroidへの実機一連（SSH、AI CLI、日本語依頼、インストール、起動）は、対象端末が接続されていないため未確認です。実機確認済みと表示するには、実際に全経路を通す必要があります。
+Linux上でシェル構文、固定URLからの取得経路、127.0.0.1 Web UIを確認済みです。Android実機でのTermux、公式Codex CLI、APKインストールは未確認です。
+
+## 上級者向け補助機能
+
+PCから接続したい場合だけ `connect.ps1` とTermux SSHを利用できます。初心者向けの通常手順では使用しません。

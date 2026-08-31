@@ -4,7 +4,7 @@ set -euo pipefail
 case "$(id -u)" in 0) echo 'rootでは実行しません。Termuxの通常ユーザーで実行してください。' >&2; exit 1;; esac
 [ -n "${PREFIX:-}" ] || { echo 'Termux上で実行してください。' >&2; exit 1; }
 
-repo="${APPMAKER_REPO_URL:-https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/ab25bfc}"
+repo="${APPMAKER_REPO_URL:-https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/3c0015cec9a523e76b63a0292d4346fdee5f7198}"
 base="$HOME/.android-ai-appmaker/source"
 mkdir -p "$base/scripts" "$HOME/.local/bin"
 for file in scripts/termux-install.sh scripts/ai-adapter.sh builder/build-apk.sh bin/appmaker web/server.py web/index.html examples/stopwatch-clock/AndroidManifest.xml examples/stopwatch-clock/src/com/example/stopwatch/MainActivity.java; do

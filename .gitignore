@@ -3,3 +3,5 @@ out-verify*/
 workspace/
 *.keystore
 *.apk
+__pycache__/
+*.pyc
