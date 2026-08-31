@@ -10,7 +10,7 @@
 ### 1行セットアップ
 
 ```sh
-curl -fsSL https://github.com/everyoneknows/android-ai-appmaker/raw/86b2ce712fa7361d9a0ac668e8c8dc9f0ffb83b3/setup.sh | bash
+curl -fsSL https://github.com/everyoneknows/android-ai-appmaker/raw/da9fee658b6307f08663135dce831615d6c1d5b9/setup.sh | bash
 ```
 
 rootは不要です。setupは自動的に電卓をbuild・署名し、保存場所を表示してから `http://127.0.0.1:8765/` を開きます。Androidのインストール画面で必要な「この提供元を許可」「インストール」は利用者が確認してください。アプリがホーム画面へ自動追加されるとは限りません。通常のアプリ一覧から「電卓」を起動できます。
@@ -25,13 +25,13 @@ AI生成アプリは試作版です。生成後に実際に操作して確認し
 
 ## 技術者向け
 
-setup.shはbootstrap commitから取得され、内部に固定したimmutable content commitからすべてのプロジェクトファイルを取得します。Android platform archiveとBuild Tools archiveはURL、内部path、SHA-256を固定して展開前に検証します。必須Termux packageはcurl、unzip、zip、python、openjdk-21、coreutilsで、setup後にcurl、unzip、zip、python、javac、java、keytool、realpath、readlink、sha256sum、find、xargsの存在を確認します。openssh、Node.js、Codexは初心者ルートの必須依存ではありません。Web serverは127.0.0.1だけにbindし、Host/Origin、起動時CSRF token、Content-Type、POST size、prompt length、ビルド排他、subprocess timeout、APK署名検証を行います。
+setup.shはbootstrap commitから取得され、内部に固定したimmutable content commitからすべてのプロジェクトファイルを取得します。初心者経路はGoogle Play版Termuxでも試験継続中です。現時点の実機確認ではJDKはopenjdk-25を使います。必須Termux packageはcurl、unzip、zip、python、openjdk-25、coreutils、aapt、aapt2、apksigner、zipalignです。aapt2、zipalign、apksignerはTermux packageを使い、Google build-tools archiveのx86_64 native executableには依存しません。Google archiveからはandroid.jarとJavaで動くd8.jarだけを取得します。openssh、Node.js、Codexは初心者ルートの必須依存ではありません。Web serverは127.0.0.1だけにbindし、Host/Origin、起動時CSRF token、Content-Type、POST size、prompt length、ビルド排他、subprocess timeout、APK署名検証を行います。
 
 詳細は [docs/architecture.md](docs/architecture.md)、[docs/security.md](docs/security.md)、[docs/troubleshooting.md](docs/troubleshooting.md) を参照してください。
 
 ## 確認状態
 
-Linux上で、archive HTTP 200、内部path、SHA-256、Java、D8、aapt2、zip、zipalign、apksigner、APK verify、localhost health checkを確認しています。fixture bootstrap、stub toolchain、production network、real toolchain buildは別テストです。real toolchain testはSDK未配置時にSKIPPEDかつ非ゼロ終了となり、release gateの成功には数えません。Android実機でのTermux fresh setup、APKインストール、アプリ起動、Android unknown-source確認は **UNVERIFIED** です。Codexログイン済みの自由生成も **UNVERIFIED** です。
+Linux上で、archive HTTP 200、内部path、SHA-256、Java、D8、aapt2、zip、zipalign、apksigner、APK verify、localhost health checkを確認しています。fixture bootstrap、stub toolchain、production network、real toolchain buildは別テストです。Android実機ではGoogle Play版Termuxの初回APK生成まで継続試験中です。APKインストール、アプリ起動、Android unknown-source確認、Codexログイン済みの自由生成は **UNVERIFIED** です。
 
 ## License
 
