@@ -10,7 +10,7 @@
 ### 1行セットアップ
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/7f47799ca20246951c801f477443bb0b248727b6/setup.sh | APPMAKER_REF=7f47799ca20246951c801f477443bb0b248727b6 bash
+curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/adc456282fb4d8b00fcda587cdb6db56e1d2a161/setup.sh | APPMAKER_REF=adc456282fb4d8b00fcda587cdb6db56e1d2a161 bash
 ```
 
 rootは不要です。setupは自動的に電卓をbuild・署名し、保存場所を表示してから `http://127.0.0.1:8765/` を開きます。Androidのインストール画面で必要な「この提供元を許可」「インストール」は利用者が確認してください。アプリがホーム画面へ自動追加されるとは限りません。通常のアプリ一覧から「電卓」を起動できます。
