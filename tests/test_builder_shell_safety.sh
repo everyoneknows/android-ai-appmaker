@@ -50,7 +50,7 @@ set -euo pipefail
 while [ "$#" -gt 0 ]; do case "$1" in -keystore) : > "$2"; shift 2;; *) shift;; esac; done
 EOF
 chmod +x "$tmp/javac" "$tools/d8" "$tmp/keytool"
-ANDROID_SDK_ROOT="$sdk" D8_ARGS_LOG="$tmp/d8.args" PATH="$tmp:$PATH" \
+ANDROID_SDK_ROOT="$sdk" AAPT2="$tools/aapt2" D8="$tools/d8" APKSIGNER="$tools/apksigner" ZIPALIGN="$tools/zipalign" D8_ARGS_LOG="$tmp/d8.args" PATH="$tmp:$tools:$PATH" \
   HOME="$tmp/home" "$root/builder/build-apk.sh" "$src" "$out"
 [ "$(grep -Fc 'classes with space.class' "$tmp/d8.args")" -eq 1 ]
 test -s "$out"
