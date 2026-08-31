@@ -55,6 +55,10 @@ cat > "$tmp/bin/pkg" <<'EOF'
 #!/usr/bin/env bash
 exit 0
 EOF
+cat > "$tmp/bin/python" <<'EOF'
+#!/usr/bin/env bash
+exec /usr/bin/python3 "$@"
+EOF
 cat > "$tmp/bin/curl" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -80,7 +84,7 @@ if [[ "$url" == http://fixture.invalid/raw/* ]]; then
 fi
 exec /usr/bin/curl -fsS "$url"
 EOF
-chmod +x "$tmp/bin/pkg" "$tmp/bin/curl"
+chmod +x "$tmp/bin/pkg" "$tmp/bin/python" "$tmp/bin/curl"
 
 line="$(awk '/^curl -fsSL https:\/\/github\.com\/everyoneknows\/android-ai-appmaker\/raw\/[0-9a-f]{40}\/setup\.sh \| bash$/{print; exit}' "$root/README.md")"
 [ -n "$line" ] || { echo 'README bootstrap line missing' >&2; exit 1; }
