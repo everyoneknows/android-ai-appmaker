@@ -16,10 +16,20 @@ if [ -s "$pidfile" ]; then
   fi
   rm -f "$pidfile"
 fi
-files='scripts/termux-install.sh scripts/ai-adapter.sh builder/build-apk.sh bin/appmaker web/server.py web/index.html examples/calculator/AndroidManifest.xml examples/calculator/src/com/example/calculator/MainActivity.java'
-while IFS= read -r file; do [ -n "$file" ] || continue; mkdir -p "$base/$(dirname "$file")"; curl -fsSL --retry 3 "$repo/$file" -o "$base/$file"; done <<EOF
-$files
-EOF
+files=(
+  'scripts/termux-install.sh'
+  'scripts/ai-adapter.sh'
+  'builder/build-apk.sh'
+  'bin/appmaker'
+  'web/server.py'
+  'web/index.html'
+  'examples/calculator/AndroidManifest.xml'
+  'examples/calculator/src/com/example/calculator/MainActivity.java'
+)
+for file in "${files[@]}"; do
+  mkdir -p "$base/$(dirname -- "$file")"
+  curl -fsSL --retry 3 "$repo/$file" -o "$base/$file"
+done
 chmod +x "$base"/scripts/*.sh "$base"/builder/build-apk.sh "$base"/bin/appmaker
 "$base/scripts/termux-install.sh"
 ln -sfn "$base/bin/appmaker" "$HOME/.local/bin/appmaker"
