@@ -8,13 +8,15 @@ build_id="$(date +%Y%m%d-%H%M%S)-$$"
 workspace_root="${APPMAKER_WORKSPACE_ROOT:-$HOME/android-ai-appmaker/workspace}"
 output_root="${APPMAKER_OUTPUT_ROOT:-$HOME/android-ai-appmaker/out}"
 secure_root() {
-  local name="$1" path="$2" canonical
+  local name="$1" path="$2" canonical normalized
   case "$path" in /*) ;; *) echo "$name は絶対パスで指定してください" >&2; exit 6;; esac
   if [ -L "$path" ]; then echo "$name はsymlinkを指定できません" >&2; exit 6; fi
   if [ -e "$path" ] && [ ! -d "$path" ]; then echo "$name はdirectoryでなければなりません" >&2; exit 6; fi
   mkdir -p -- "$path"
+  normalized="$path"
+  while [ "$normalized" != / ] && [ "${normalized%/}" != "$normalized" ]; do normalized="${normalized%/}"; done
   canonical="$(realpath -e -- "$path")"
-  [ "$canonical" = "$path" ] || { echo "$name にsymlink境界を含められません" >&2; exit 6; }
+  [ "$canonical" = "$normalized" ] || { echo "$name にsymlink境界を含められません" >&2; exit 6; }
 }
 secure_root APPMAKER_WORKSPACE_ROOT "$workspace_root"
 secure_root APPMAKER_OUTPUT_ROOT "$output_root"
