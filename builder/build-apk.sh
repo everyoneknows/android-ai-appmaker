@@ -17,7 +17,7 @@ if [ -x "$d8" ]; then
 else
   java -cp "$d8jar" com.android.tools.r8.D8 --lib "$jar" --output "$tmp/dex" $(find "$tmp/classes" -name '*.class')
 fi
-"$aapt2" link --manifest "$src/AndroidManifest.xml" -I "$jar" -o "$tmp/resources.apk"
+"$aapt2" link --manifest "$src/AndroidManifest.xml" --min-sdk-version 23 --target-sdk-version 35 -I "$jar" -o "$tmp/resources.apk"
 cp "$tmp/resources.apk" "$tmp/unsigned.apk"; (cd "$tmp" && zip -q -j unsigned.apk dex/classes.dex)
 key="$HOME/.android-ai-appmaker/release.keystore"; mkdir -p "$(dirname "$key")"
 if [ ! -f "$key" ]; then keytool -genkeypair -keystore "$key" -storepass android -alias appmaker -keypass android -dname 'CN=android-ai-appmaker' -keyalg RSA -keysize 2048 -validity 10000 >/dev/null 2>&1; chmod 600 "$key"; fi
