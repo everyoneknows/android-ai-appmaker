@@ -10,10 +10,10 @@
 ### 1行セットアップ
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/IMPLEMENTATION_COMMIT_SHA/setup.sh | APPMAKER_REF=IMPLEMENTATION_COMMIT_SHA bash
+curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/7f47799ca20246951c801f477443bb0b248727b6/setup.sh | APPMAKER_REF=7f47799ca20246951c801f477443bb0b248727b6 bash
 ```
 
-上の `IMPLEMENTATION_COMMIT_SHA` は、公開されている実装commit SHAへ置換済みの実際の一行をリリース時に掲載します。rootは不要です。setupは自動的に電卓をbuild・署名し、保存場所を表示してから `http://127.0.0.1:8765/` を開きます。Androidのインストール画面で必要な「この提供元を許可」「インストール」は利用者が確認してください。アプリがホーム画面へ自動追加されるとは限りません。通常のアプリ一覧から「電卓」を起動できます。
+rootは不要です。setupは自動的に電卓をbuild・署名し、保存場所を表示してから `http://127.0.0.1:8765/` を開きます。Androidのインストール画面で必要な「この提供元を許可」「インストール」は利用者が確認してください。アプリがホーム画面へ自動追加されるとは限りません。通常のアプリ一覧から「電卓」を起動できます。
 
 初回電卓はCodexなしで動作します。四則演算、0〜9、小数点、AC/C、タッチ操作、portraitに対応し、ネットワーク権限・特別なpermission・外部libraryは使用しません。`123 × 456 =` は `56088` になります。ゼロ除算や不正な連打はクラッシュせずErrorまたは現在の入力を表示します。
 
