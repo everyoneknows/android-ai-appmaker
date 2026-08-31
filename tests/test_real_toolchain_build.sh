@@ -11,7 +11,7 @@ if [ ! -f "$sdk/platforms/android-35/android.jar" ] || [ ! -x "$tools/aapt2" ] |
   exit 77
 fi
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
-HOME="$tmp/home" ANDROID_SDK_ROOT="$sdk" bash "$root/bin/appmaker" --sample >/dev/null
+HOME="$tmp/home" ANDROID_SDK_ROOT="$sdk" AAPT2="$tools/aapt2" ZIPALIGN="$tools/zipalign" APKSIGNER="$tools/apksigner" bash "$root/bin/appmaker" --sample >/dev/null
 apk="$tmp/home/android-ai-appmaker/out/latest/app.apk"
 [ -s "$apk" ]
 unzip -t "$apk" >/dev/null
