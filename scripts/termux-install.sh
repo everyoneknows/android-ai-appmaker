@@ -10,6 +10,13 @@ if [ ! -f "$sdk/platforms/android-35/android.jar" ]; then
   curl -fsSL https://dl.google.com/android/repository/platform-35_r02.zip -o "$HOME/.android-ai-appmaker/platform.zip"
   unzip -q -j "$HOME/.android-ai-appmaker/platform.zip" 'android-35/android.jar' -d "$sdk/platforms/android-35"
 fi
+d8jar="$sdk/build-tools/35.0.0/lib/d8.jar"
+if [ ! -f "$d8jar" ]; then
+  mkdir -p "$(dirname "$d8jar")"
+  buildtools="$HOME/.android-ai-appmaker/build-tools.zip"
+  curl -fsSL https://dl.google.com/android/repository/build-tools_r35.0.0-linux.zip -o "$buildtools"
+  unzip -q -j "$buildtools" 'android-15/lib/d8.jar' -d "$(dirname "$d8jar")"
+fi
 if command -v npm >/dev/null 2>&1; then
   if command -v codex >/dev/null 2>&1; then
     echo '公式Codex CLIを検出しました。'
