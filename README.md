@@ -23,13 +23,13 @@ rootは不要です。setupは自動的に電卓をbuild・署名し、`http://1
 
 AI生成アプリは試作版です。生成後に実際に操作して確認してください。動かない・希望と違う場合の自動修正機能は今後追加予定です。
 
-AI生成画面で「Codexは準備できています。OpenAIへのログインだけ必要です」と表示された場合は、Termuxに戻って `codex login` を実行し、ログイン後に画面の「状態を再確認」を押してください。Codex CLIが見つからない場合は、AIなしでも初回電卓は利用できます。
+AI生成画面で「Codexは準備できています。OpenAIへのログインだけ必要です」と表示された場合は、Termuxに戻って `codex login` を実行し、ログイン後に画面の「状態を再確認」を押してください。Codex CLIが見つからない場合は、画面のコピー buttonsから、OpenAI Docsに記載された公式導入コマンド `curl -fsSL https://chatgpt.com/codex/install.sh | sh` をTermuxで実行してください。導入後に `codex` を起動してChatGPTへログインします。OpenAI DocsはTermux/Androidを対応環境として明記していないため、導入できない場合に第三者forkや非公式代替を使わず、AI生成を利用できない状態として扱います。
 
 ## 技術者向け
 
 setup.shはbootstrap commitから取得され、内部に固定したimmutable content commitからすべてのプロジェクトファイルを取得します。初心者経路はGoogle Play版Termuxでも試験継続中です。現時点の実機確認ではJDKはopenjdk-25を使い、compile/target platformはAndroid API 34（android-34）です。必須Termux packageはcurl、unzip、zip、python、openjdk-25、coreutils、aapt、aapt2です。aapt2とzipalignはTermux native commandを使い、Google build-tools archiveのx86_64 native executableには依存しません。Google archiveからはAndroid API 34のandroid.jar、Javaで動くd8.jar、apksigner.jarを取得し、署名・検証もJDK25の明示パスで実行します。Termuxのapksigner packageは使用しません。openssh、Node.js、Codexは初心者ルートの必須依存ではありません。Web serverは127.0.0.1だけにbindし、Host/Origin、起動時CSRF token、Content-Type、POST size、prompt length、ビルド排他、subprocess timeout、APK署名検証を行います。
 
-詳細は [docs/architecture.md](docs/architecture.md)、[docs/security.md](docs/security.md)、[docs/troubleshooting.md](docs/troubleshooting.md) を参照してください。
+詳細は [docs/architecture.md](docs/architecture.md)、[docs/security.md](docs/security.md)、[docs/troubleshooting.md](docs/troubleshooting.md) を参照してください。公式の導入手順は [OpenAI Docs: Codex CLI](https://learn.chatgpt.com/docs/codex/cli) です。
 
 ## 確認状態
 

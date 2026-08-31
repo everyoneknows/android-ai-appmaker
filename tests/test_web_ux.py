@@ -9,6 +9,13 @@ import urllib.request
 from pathlib import Path
 
 root = Path(__file__).parents[1]
+html = (root / 'web/index.html').read_text()
+assert 'ダウンロード完了の通知が表示された場合は、その通知をタップして開けることもあります。' in html
+assert 'https://chatgpt.com/codex/install.sh' in html
+assert 'data-copy="codex login"' in html
+assert 'data-copy="curl -fsSL https://chatgpt.com/codex/install.sh | sh"' in html
+assert 'id="step3"' not in html
+assert "document.querySelector('#welcome').style.display='none';document.querySelector('#next').style.display='block'" in html
 with tempfile.TemporaryDirectory() as home, tempfile.TemporaryDirectory() as tools:
     os.environ['HOME'] = home
     codex = Path(tools) / 'codex'
