@@ -4,7 +4,23 @@ ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"; sample=false; prompt=""
 if [ "${1:-}" = --sample ]; then sample=true; shift; else prompt="${*:-}"; fi
 if [ "$sample" = false ] && [ -z "$prompt" ]; then printf '作りたいアプリを日本語で入力してください: '; IFS= read -r prompt; fi
 if [ "$sample" = false ] && [ -z "$prompt" ]; then echo '仕様が空です' >&2; exit 2; fi
-build_id="$(date +%Y%m%d-%H%M%S)-$$"; workspace_root="${APPMAKER_WORKSPACE_ROOT:-$HOME/android-ai-appmaker/workspace}"; work="$workspace_root/$build_id"; mkdir -p "$work"
+build_id="$(date +%Y%m%d-%H%M%S)-$$"
+workspace_root="${APPMAKER_WORKSPACE_ROOT:-$HOME/android-ai-appmaker/workspace}"
+output_root="${APPMAKER_OUTPUT_ROOT:-$HOME/android-ai-appmaker/out}"
+secure_root() {
+  local name="$1" path="$2" canonical
+  case "$path" in /*) ;; *) echo "$name は絶対パスで指定してください" >&2; exit 6;; esac
+  if [ -L "$path" ]; then echo "$name はsymlinkを指定できません" >&2; exit 6; fi
+  if [ -e "$path" ] && [ ! -d "$path" ]; then echo "$name はdirectoryでなければなりません" >&2; exit 6; fi
+  mkdir -p -- "$path"
+  canonical="$(realpath -e -- "$path")"
+  [ "$canonical" = "$path" ] || { echo "$name にsymlink境界を含められません" >&2; exit 6; }
+}
+secure_root APPMAKER_WORKSPACE_ROOT "$workspace_root"
+secure_root APPMAKER_OUTPUT_ROOT "$output_root"
+work="$workspace_root/$build_id"
+if [ -e "$work" ]; then echo "workspace build directoryが既に存在します: $work" >&2; exit 6; fi
+mkdir -- "$work"
 if [ "$sample" = true ]; then
  cp "$ROOT/examples/calculator/AndroidManifest.xml" "$work/"; mkdir -p "$work/src/com/example/calculator"; cp "$ROOT/examples/calculator/src/com/example/calculator/MainActivity.java" "$work/src/com/example/calculator/"
 else
@@ -14,7 +30,10 @@ else
  (cd "$work" && "$ROOT/scripts/ai-adapter.sh" exec --full-auto "次の仕様のAndroidアプリのソースをこのディレクトリに生成してください: $prompt. AndroidManifest.xmlとJavaソースだけを生成してください。")
 fi
 [ -f "$work/AndroidManifest.xml" ] && find "$work" -name '*.java' -print -quit | grep -q . || { echo 'アプリソースの生成に失敗しました' >&2; exit 4; }
-out_root="${APPMAKER_OUTPUT_ROOT:-$HOME/android-ai-appmaker/out}/$build_id"; mkdir -p "$out_root"
+out_root="$output_root/$build_id"; mkdir -- "$out_root"
 "$ROOT/builder/build-apk.sh" "$work" "$out_root/app.apk"
 [ -s "$out_root/app.apk" ] || { echo 'APKが生成されませんでした' >&2; exit 5; }
-ln -sfn "$out_root" "${APPMAKER_OUTPUT_ROOT:-$HOME/android-ai-appmaker/out}/latest"; echo "APKを生成しました: $out_root/app.apk"
+latest="$output_root/latest"
+if [ -e "$latest" ] && [ ! -L "$latest" ]; then echo "output/latestはsymlink以外で占有されています" >&2; exit 6; fi
+rm -f -- "$latest"
+ln -s -- "$out_root" "$latest"; echo "APKを生成しました: $out_root/app.apk"

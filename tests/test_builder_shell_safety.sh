@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+sdk="$tmp/sdk"; tools="$sdk/build-tools/35.0.0"; src="$tmp/src"; out="$tmp/out.apk"
+mkdir -p "$tools/lib" "$sdk/platforms/android-35" "$src"
+touch "$sdk/platforms/android-35/android.jar"
+printf '<manifest/>\n' > "$src/AndroidManifest.xml"
+mkdir -p "$src/src"; printf 'class Main {}\n' > "$src/src/Main.java"
+cat > "$tools/aapt2" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+while [ "$#" -gt 0 ]; do
+  if [ "$1" = -o ]; then
+    item="$(mktemp)"; printf resource > "$item"; zip -q "$2" "$item"; rm -f "$item"; exit 0
+  fi
+  shift
+done
+EOF
+cat > "$tools/zipalign" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+cp "${@: -2:1}" "${@: -1}"
+EOF
+cat > "$tools/apksigner" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+if [ "${1:-}" = sign ]; then
+  input="${@: -1}"
+  while [ "$#" -gt 0 ]; do [ "$1" = --out ] && { cp "$input" "$2"; exit 0; }; shift; done
+fi
+EOF
+chmod +x "$tools/aapt2" "$tools/zipalign" "$tools/apksigner"
+cat > "$tmp/javac" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+while [ "$#" -gt 0 ]; do [ "$1" = -d ] && { out="$2"; break; }; shift; done
+mkdir -p "$out"; printf class > "$out/classes with space.class"
+EOF
+cat > "$tools/d8" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "$@" > "$D8_ARGS_LOG"
+while [ "$#" -gt 0 ]; do [ "$1" = --output ] && { mkdir -p "$2"; printf dex > "$2/classes.dex"; exit 0; }; shift; done
+EOF
+cat > "$tmp/keytool" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+while [ "$#" -gt 0 ]; do case "$1" in -keystore) : > "$2"; shift 2;; *) shift;; esac; done
+EOF
+chmod +x "$tmp/javac" "$tools/d8" "$tmp/keytool"
+ANDROID_SDK_ROOT="$sdk" D8_ARGS_LOG="$tmp/d8.args" PATH="$tmp:$PATH" \
+  HOME="$tmp/home" "$root/builder/build-apk.sh" "$src" "$out"
+[ "$(grep -Fc 'classes with space.class' "$tmp/d8.args")" -eq 1 ]
+test -s "$out"
+printf '%s\n' 'builder shell safety test passed: class path with spaces stayed one argument'

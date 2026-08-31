@@ -12,10 +12,12 @@ jar="$SDK/platforms/$platform/android.jar"
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
 mkdir -p "$tmp/classes" "$tmp/gen" "$tmp/res" "$tmp/dex" "$(dirname "$out")"
 find "$src" -name '*.java' -print0 | xargs -0 javac -source 8 -target 8 -classpath "$SDK/platforms/$platform/android.jar" -d "$tmp/classes"
+mapfile -d '' class_files < <(find "$tmp/classes" -type f -name '*.class' -print0)
+[ "${#class_files[@]}" -gt 0 ] || { echo 'class fileが生成されませんでした' >&2; exit 1; }
 if [ -x "$d8" ]; then
-  "$d8" --lib "$jar" --output "$tmp/dex" $(find "$tmp/classes" -name '*.class')
+  "$d8" --lib "$jar" --output "$tmp/dex" "${class_files[@]}"
 else
-  java -cp "$d8jar" com.android.tools.r8.D8 --lib "$jar" --output "$tmp/dex" $(find "$tmp/classes" -name '*.class')
+  java -cp "$d8jar" com.android.tools.r8.D8 --lib "$jar" --output "$tmp/dex" "${class_files[@]}"
 fi
 "$aapt2" link --manifest "$src/AndroidManifest.xml" --min-sdk-version 23 --target-sdk-version 35 -I "$jar" -o "$tmp/resources.apk"
 cp "$tmp/resources.apk" "$tmp/unsigned.apk"; (cd "$tmp" && zip -q -j unsigned.apk dex/classes.dex)

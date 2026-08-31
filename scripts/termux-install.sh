@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
 state="$HOME/.android-ai-appmaker"; sdk="$state/sdk"; mkdir -p "$state" "$sdk"
-required='curl unzip python openjdk-21'; pkg update -y
-for package in $required; do
+required=(curl unzip python openjdk-21); pkg update -y
+for package in "${required[@]}"; do
   pkg install -y "$package" >/dev/null || { echo "必須パッケージを導入できませんでした: $package" >&2; exit 1; }
   case "$package" in curl) command -v curl;; unzip) command -v unzip;; python) command -v python;; openjdk-21) command -v javac;; esac >/dev/null || { echo "コマンドが見つかりません: $package" >&2; exit 1; }
 done

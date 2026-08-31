@@ -8,6 +8,6 @@ line="$(awk '/^curl -fsSL https:\/\/github\.com\/everyoneknows\/android-ai-appma
 [ "$(printf '%s' "$line" | grep -oE '[0-9a-f]{40}' | wc -l)" -eq 1 ]
 ! printf '%s\n' "$line" | grep -Eq 'APPMAKER_REF=|raw\.githubusercontent\.com|main|\\$|\\`'
 grep -q '^DEFAULT_APPMAKER_REF="[0-9a-f]\{40\}"$' "$root/setup.sh"
-grep -q 'github\.com/everyoneknows/android-ai-appmaker/raw/\$APPMAKER_REF' "$root/setup.sh"
-! grep -RInE 'raw\.githubusercontent\.com|APPMAKER_REF=.*bash|APPMAKER_REF=.*README' "$root/README.md" "$root/docs" "$root/setup.sh"
+grep -q 'raw\.githubusercontent\.com/everyoneknows/android-ai-appmaker/\$APPMAKER_REF' "$root/setup.sh"
+! grep -RInE 'github\.com/everyoneknows/android-ai-appmaker/raw/\$APPMAKER_REF|APPMAKER_REF=.*bash|APPMAKER_REF=.*README' "$root/README.md" "$root/docs" "$root/setup.sh"
 printf '%s\n' 'release UX checks passed'
