@@ -10,7 +10,7 @@
 ### 1行セットアップ
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/8886cd60e1585fe702ffb1832d286138d88d6aa2/setup.sh | APPMAKER_REF=8886cd60e1585fe702ffb1832d286138d88d6aa2 bash
+curl -fsSL https://github.com/everyoneknows/android-ai-appmaker/raw/498f4a79ec475520e91cfba0e0e3cbcf98297b0a/setup.sh | bash
 ```
 
 rootは不要です。setupは自動的に電卓をbuild・署名し、保存場所を表示してから `http://127.0.0.1:8765/` を開きます。Androidのインストール画面で必要な「この提供元を許可」「インストール」は利用者が確認してください。アプリがホーム画面へ自動追加されるとは限りません。通常のアプリ一覧から「電卓」を起動できます。
@@ -23,7 +23,7 @@ rootは不要です。setupは自動的に電卓をbuild・署名し、保存場
 
 ## 技術者向け
 
-setup.shはすべてのプロジェクトファイルを同じimmutable commit SHAから取得します。Android platform archiveとBuild Tools archiveはURL、内部path、SHA-256を固定して展開前に検証します。必須Termux packageはcurl、unzip、python、openjdk-21だけで、openssh、Node.js、Codexは初心者ルートの必須依存ではありません。Web serverは127.0.0.1だけにbindし、Host/Origin、起動時CSRF token、Content-Type、POST size、prompt length、ビルド排他、subprocess timeout、APK署名検証を行います。
+setup.shはbootstrap commitから取得され、内部に固定したimmutable content commitからすべてのプロジェクトファイルを取得します。Android platform archiveとBuild Tools archiveはURL、内部path、SHA-256を固定して展開前に検証します。必須Termux packageはcurl、unzip、python、openjdk-21だけで、openssh、Node.js、Codexは初心者ルートの必須依存ではありません。Web serverは127.0.0.1だけにbindし、Host/Origin、起動時CSRF token、Content-Type、POST size、prompt length、ビルド排他、subprocess timeout、APK署名検証を行います。
 
 詳細は [docs/architecture.md](docs/architecture.md)、[docs/security.md](docs/security.md)、[docs/troubleshooting.md](docs/troubleshooting.md) を参照してください。
 
