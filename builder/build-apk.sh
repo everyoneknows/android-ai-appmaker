@@ -2,7 +2,7 @@
 set -euo pipefail
 src="${1:?source directory}"; out="${2:?output apk}"
 SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/.android-ai-appmaker/sdk}}"
-platform="${ANDROID_PLATFORM:-android-35}"
+platform="${ANDROID_PLATFORM:-android-34}"
 bt="${ANDROID_BUILD_TOOLS:-35.0.0}"
 toolroot="$SDK/build-tools/$bt"
 aapt2="${AAPT2:-$(command -v aapt2 2>/dev/null || true)}"
@@ -19,7 +19,7 @@ find "$src" -name '*.java' -print0 | xargs -0 "$javac25" -source 8 -target 8 -cl
 mapfile -d '' class_files < <(find "$tmp/classes" -type f -name '*.class' -print0)
 [ "${#class_files[@]}" -gt 0 ] || { echo 'class fileが生成されませんでした' >&2; exit 1; }
 "$java25" -cp "$d8jar" com.android.tools.r8.D8 --lib "$jar" --output "$tmp/dex" "${class_files[@]}"
-"$aapt2" link --manifest "$src/AndroidManifest.xml" --min-sdk-version 23 --target-sdk-version 35 -I "$jar" -o "$tmp/resources.apk"
+"$aapt2" link --manifest "$src/AndroidManifest.xml" --min-sdk-version 23 --target-sdk-version 34 -I "$jar" -o "$tmp/resources.apk"
 cp "$tmp/resources.apk" "$tmp/unsigned.apk"; (cd "$tmp" && zip -q -j unsigned.apk dex/classes.dex)
 key="$HOME/.android-ai-appmaker/release.keystore"; mkdir -p "$(dirname "$key")"
 if [ ! -f "$key" ]; then "$keytool25" -genkeypair -keystore "$key" -storepass android -alias appmaker -keypass android -dname 'CN=android-ai-appmaker' -keyalg RSA -keysize 2048 -validity 10000 >/dev/null 2>&1; chmod 600 "$key"; fi

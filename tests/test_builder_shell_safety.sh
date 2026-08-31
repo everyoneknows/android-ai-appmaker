@@ -4,9 +4,9 @@ set -euo pipefail
 root="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
 sdk="$tmp/sdk"; tools="$sdk/build-tools/35.0.0"; src="$tmp/src"; out="$tmp/out.apk"; jdk="$tmp/jdk"
-mkdir -p "$tools/lib" "$sdk/platforms/android-35" "$src" "$jdk/bin"
+mkdir -p "$tools/lib" "$sdk/platforms/android-34" "$src" "$jdk/bin"
 printf 'jar fixture' > "$tools/lib/d8.jar"; printf 'jar fixture' > "$tools/lib/apksigner.jar"
-printf 'android jar fixture' > "$sdk/platforms/android-35/android.jar"
+printf 'android jar fixture' > "$sdk/platforms/android-34/android.jar"
 printf '<manifest/>\n' > "$src/AndroidManifest.xml"
 mkdir -p "$src/src"; printf 'class Main {}\n' > "$src/src/Main.java"
 cat > "$tools/aapt2" <<'EOF'
@@ -64,3 +64,6 @@ ANDROID_SDK_ROOT="$sdk" JDK25_ROOT="$jdk" AAPT2="$tools/aapt2" APKSIGNER_JAR="$t
 [ "$(grep -Fc 'classes with space.class' "$tmp/d8.args")" -eq 1 ]
 test -s "$out"
 printf '%s\n' 'builder shell safety test passed: class path with spaces stayed one argument'
+[ "$(grep -Fc 'platform="${ANDROID_PLATFORM:-android-34}"' "$root/builder/build-apk.sh")" -eq 1 ]
+[ "$(grep -Fc -- '--target-sdk-version 34' "$root/builder/build-apk.sh")" -eq 1 ]
+printf '%s\n' 'builder API 34 default/target regression checks passed'

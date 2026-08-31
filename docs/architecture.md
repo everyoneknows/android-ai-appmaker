@@ -1,5 +1,5 @@
 # Architecture
 
-Termux上の通常ユーザー領域に、JDK、Android command-line tools、ソースworkspaceを置きます。初心者ルートの初回はAI CLIなしでcalculator templateを`appmaker`へ渡します。自由生成時だけOpenAI公式Codex CLIをアダプタ越しに呼び、結果をJavaソースとしてビルダーへ渡します。ビルダーはaapt2でmanifest、D8でdex、zipalignとapksignerでローカル署名APKを作ります。
+Termux上の通常ユーザー領域に、JDK、Android command-line tools、ソースworkspaceを置きます。初心者ルートの初回はAI CLIなしでcalculator templateを`appmaker`へ渡します。自由生成時だけOpenAI公式Codex CLIをアダプタ越しに呼び、結果をJavaソースとしてビルダーへ渡します。ビルダーはAndroid API 34（`android-34`）をcompile/target platformとして、aapt2でmanifest、D8でdex、zipalignとapksignerでローカル署名APKを作ります。
 
 公式Codex CLIを優先します。Termux ARM64上の実機可否は端末・配布版に依存するため、CLIが無い場合も最初のサンプルで導線を検証できます。forkは使っていません。
