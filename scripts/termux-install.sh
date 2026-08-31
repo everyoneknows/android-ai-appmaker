@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
 state="$HOME/.android-ai-appmaker"; sdk="$state/sdk"; mkdir -p "$state" "$sdk"
-required=(curl unzip zip python openjdk-25 coreutils aapt aapt2 apksigner zipalign); pkg update -y
+required=(curl unzip zip python openjdk-25 coreutils aapt aapt2 apksigner); pkg update -y
 for package in "${required[@]}"; do
   pkg install -y "$package" >/dev/null || { echo "必須パッケージを導入できませんでした: $package" >&2; exit 1; }
-  case "$package" in curl) command -v curl;; unzip) command -v unzip;; zip) command -v zip;; python) command -v python;; openjdk-25) command -v javac && command -v java && command -v keytool;; coreutils) command -v realpath && command -v readlink && command -v sha256sum && command -v find && command -v xargs;; aapt|aapt2|apksigner|zipalign) command -v "$package";; esac >/dev/null || { echo "コマンドが見つかりません: $package" >&2; exit 1; }
+  case "$package" in curl) command -v curl;; unzip) command -v unzip;; zip) command -v zip;; python) command -v python;; openjdk-25) command -v javac && command -v java && command -v keytool;; coreutils) command -v realpath && command -v readlink && command -v sha256sum && command -v find && command -v xargs;; aapt|aapt2|apksigner) command -v "$package";; esac >/dev/null || { echo "コマンドが見つかりません: $package" >&2; exit 1; }
 done
 commands=(curl unzip zip python javac java keytool aapt2 zipalign apksigner realpath readlink sha256sum find xargs)
 for command in "${commands[@]}"; do command -v "$command" >/dev/null || { echo "必須commandが見つかりません: $command" >&2; exit 1; }; done

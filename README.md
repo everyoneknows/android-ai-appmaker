@@ -25,7 +25,7 @@ AI生成アプリは試作版です。生成後に実際に操作して確認し
 
 ## 技術者向け
 
-setup.shはbootstrap commitから取得され、内部に固定したimmutable content commitからすべてのプロジェクトファイルを取得します。初心者経路はGoogle Play版Termuxでも試験継続中です。現時点の実機確認ではJDKはopenjdk-25を使います。必須Termux packageはcurl、unzip、zip、python、openjdk-25、coreutils、aapt、aapt2、apksigner、zipalignです。aapt2、zipalign、apksignerはTermux packageを使い、Google build-tools archiveのx86_64 native executableには依存しません。Google archiveからはandroid.jarとJavaで動くd8.jarだけを取得します。openssh、Node.js、Codexは初心者ルートの必須依存ではありません。Web serverは127.0.0.1だけにbindし、Host/Origin、起動時CSRF token、Content-Type、POST size、prompt length、ビルド排他、subprocess timeout、APK署名検証を行います。
+setup.shはbootstrap commitから取得され、内部に固定したimmutable content commitからすべてのプロジェクトファイルを取得します。初心者経路はGoogle Play版Termuxでも試験継続中です。現時点の実機確認ではJDKはopenjdk-25を使います。必須Termux packageはcurl、unzip、zip、python、openjdk-25、coreutils、aapt、aapt2、apksignerです。aapt2、zipalign、apksignerはTermux packageを使い、Google build-tools archiveのx86_64 native executableには依存しません。zipalignはaapt/aapt2/apksigner導入後に提供されるcommandとして確認します。Google archiveからはandroid.jarとJavaで動くd8.jarだけを取得します。openssh、Node.js、Codexは初心者ルートの必須依存ではありません。Web serverは127.0.0.1だけにbindし、Host/Origin、起動時CSRF token、Content-Type、POST size、prompt length、ビルド排他、subprocess timeout、APK署名検証を行います。
 
 詳細は [docs/architecture.md](docs/architecture.md)、[docs/security.md](docs/security.md)、[docs/troubleshooting.md](docs/troubleshooting.md) を参照してください。
 
