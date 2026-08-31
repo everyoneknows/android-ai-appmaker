@@ -1,32 +1,20 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
-ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
-prompt="${*:-}"
-if [ -z "$prompt" ]; then printf '作りたいアプリを日本語で入力してください: '; IFS= read -r prompt; fi
-[ -n "$prompt" ] || { echo '仕様が空です' >&2; exit 2; }
-build_id="$(date +%Y%m%d-%H%M%S)-$$"
-work="${APPMAKER_WORKSPACE_ROOT:-$HOME/android-ai-appmaker/workspace}/$build_id"
-mkdir -p "$work"
-echo "ビルドID: $build_id"
-ai_mode="${APPMAKER_AI:-auto}"
-codex_ready=false
-if [ "$ai_mode" != none ] && command -v codex >/dev/null 2>&1 && codex login status >/dev/null 2>&1; then codex_ready=true; fi
-if [ "$codex_ready" = true ]; then
-  echo 'AIモード：利用可能'
-  (cd "$work" && "$ROOT/scripts/ai-adapter.sh" exec --full-auto "次の仕様のAndroidアプリのソースをこのディレクトリに生成してください: $prompt. AndroidManifest.xmlとJavaソースだけを生成し、builder/build-apk.shやビルド、署名、APK作成、外部ネットワーク権限の追加は絶対に行わないでください。")
-elif [ "$prompt" = 'ストップウォッチ機能付きの時計' ] || [ "$prompt" = 'ストップウォッチ機能付きの時計。' ]; then
-  echo 'AIモード：利用不可。デモのサンプルテンプレートを生成します。'
-  cp "$ROOT/examples/stopwatch-clock/AndroidManifest.xml" "$work/"
-  mkdir -p "$work/src/com/example/stopwatch"
-  cp "$ROOT/examples/stopwatch-clock/src/com/example/stopwatch/MainActivity.java" "$work/src/com/example/stopwatch/"
+ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"; sample=false; prompt=""
+if [ "${1:-}" = --sample ]; then sample=true; shift; else prompt="${*:-}"; fi
+if [ "$sample" = false ] && [ -z "$prompt" ]; then printf '作りたいアプリを日本語で入力してください: '; IFS= read -r prompt; fi
+if [ "$sample" = false ] && [ -z "$prompt" ]; then echo '仕様が空です' >&2; exit 2; fi
+build_id="$(date +%Y%m%d-%H%M%S)-$$"; workspace_root="${APPMAKER_WORKSPACE_ROOT:-$HOME/android-ai-appmaker/workspace}"; work="$workspace_root/$build_id"; mkdir -p "$work"
+if [ "$sample" = true ]; then
+ cp "$ROOT/examples/calculator/AndroidManifest.xml" "$work/"; mkdir -p "$work/src/com/example/calculator"; cp "$ROOT/examples/calculator/src/com/example/calculator/MainActivity.java" "$work/src/com/example/calculator/"
 else
-  echo 'AIモード：利用不可。サンプルアプリのみ生成できます。自由入力は生成しません。' >&2
-  exit 3
+ ai_mode="${APPMAKER_AI:-auto}"; codex_ready=false
+ if [ "$ai_mode" != none ] && command -v codex >/dev/null 2>&1 && codex login status >/dev/null 2>&1; then codex_ready=true; fi
+ [ "$codex_ready" = true ] || { echo 'AIアプリ生成を使うにはOpenAI Codexのログインが必要です' >&2; exit 3; }
+ (cd "$work" && "$ROOT/scripts/ai-adapter.sh" exec --full-auto "次の仕様のAndroidアプリのソースをこのディレクトリに生成してください: $prompt. AndroidManifest.xmlとJavaソースだけを生成してください。")
 fi
-[ -f "$work/AndroidManifest.xml" ] || { echo 'AIがManifestを生成しませんでした' >&2; exit 4; }
-find "$work" -name '*.java' -print -quit | grep -q . || { echo 'AIがJavaソースを生成しませんでした' >&2; exit 4; }
-out_root="${APPMAKER_OUTPUT_ROOT:-$HOME/android-ai-appmaker/out}/$build_id"
-mkdir -p "$out_root"
+[ -f "$work/AndroidManifest.xml" ] && find "$work" -name '*.java' -print -quit | grep -q . || { echo 'アプリソースの生成に失敗しました' >&2; exit 4; }
+out_root="${APPMAKER_OUTPUT_ROOT:-$HOME/android-ai-appmaker/out}/$build_id"; mkdir -p "$out_root"
 "$ROOT/builder/build-apk.sh" "$work" "$out_root/app.apk"
-ln -sfn "$out_root" "${APPMAKER_OUTPUT_ROOT:-$HOME/android-ai-appmaker/out}/latest"
-echo "APKを生成しました: $out_root/app.apk"
+[ -s "$out_root/app.apk" ] || { echo 'APKが生成されませんでした' >&2; exit 5; }
+ln -sfn "$out_root" "${APPMAKER_OUTPUT_ROOT:-$HOME/android-ai-appmaker/out}/latest"; echo "APKを生成しました: $out_root/app.apk"

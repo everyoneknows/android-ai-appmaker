@@ -1,63 +1,36 @@
 # android-ai-appmaker
 
-## Androidだけでアプリを作る
+## やることは4つだけです
 
-1. AndroidへTermuxを入れる
-2. 下の1行をTermuxへ貼り付ける
-3. ブラウザで仕様を入力して「アプリを作る」を押す
+1. Termuxをインストールしてください。
+2. 次の1行をコピペしてください。
+3. 電卓をインストールしてください。APKもスマホ内へ保存されます。
+4. あなたの番です。欲しいアプリを入力してください。
 
-最初の例文は「ストップウォッチ機能付きの時計」です。
-
-> 公開版は確認済みコミットを固定参照します。
-
-### 1. Termuxで貼る1行
+### 1行セットアップ
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/v0.1.0/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/IMPLEMENTATION_COMMIT_SHA/setup.sh | APPMAKER_REF=IMPLEMENTATION_COMMIT_SHA bash
 ```
 
-setupはroot、sudo、Androidシステム領域、bootloaderを使わず、Termuxのホーム以下だけを変更します。完了すると `http://127.0.0.1:8765/` を開きます。LANには公開しません。
+上の `IMPLEMENTATION_COMMIT_SHA` は、公開されている実装commit SHAへ置換済みの実際の一行をリリース時に掲載します。rootは不要です。setupは自動的に電卓をbuild・署名し、保存場所を表示してから `http://127.0.0.1:8765/` を開きます。Androidのインストール画面で必要な「この提供元を許可」「インストール」は利用者が確認してください。アプリがホーム画面へ自動追加されるとは限りません。通常のアプリ一覧から「電卓」を起動できます。
 
-### Web UIで作成
+初回電卓はCodexなしで動作します。四則演算、0〜9、小数点、AC/C、タッチ操作、portraitに対応し、ネットワーク権限・特別なpermission・外部libraryは使用しません。`123 × 456 =` は `56088` になります。ゼロ除算や不正な連打はクラッシュせずErrorまたは現在の入力を表示します。
 
-ブラウザの入力欄は自由入力、貼り付け、例文ボタン、Gboard音声入力に対応します。生成・ビルド・署名が終わるとAPKをAndroidのインストール画面へ渡します。
+## あなたの番です
 
-## このプロトタイプの範囲
-
-- Android Studio・Gradle・root・USBケーブル不要
-- Java compiler、aapt2、D8、zipalign、apksignerをTermux内へ取得して使う
-- `bin/appmaker`は公式Codex CLIが利用可能・認証済みの場合だけAI生成を行う。利用不能時に自由入力を別アプリとして生成することはない
-- AI CLIは `APPMAKER_AI=codex` / `APPMAKER_AI=none` で差し替え可能
-- サンプルは通信権限なし、黒背景・白文字、通常のランチャーから起動可能
-
-公式Codex CLIは公式standalone installer、次に公式npmパッケージ `@openai/codex` の順で試します。Termux/Androidでの動作は実機確認が必要です。利用する場合はTermuxで `codex login`、状態確認は `codex login status` を使います。第三者forkは使用しません。
+電卓生成後の画面で「どんなアプリを作りますか？」に自由入力、貼り付け、Gboard音声入力ができます。「税込10%ボタンを付ける」「計算履歴を付ける」「買い物メモ」などの例もあります。AI自由生成にはOpenAI公式Codexの導入とログインが必要です。未導入・未ログイン時は成功を偽装せず、明確に案内します。第三者forkは使用しません。
 
 ## 技術者向け
 
-```text
-setup.sh -> scripts/termux-install.sh -> bin/appmaker
-                                      -> builder/build-apk.sh
-                                      -> examples/stopwatch-clock
-```
-
-ビルダーはAndroid SDKの固定版を前提にせず、Termuxパッケージまたは公式Google Maven配布物から必要なツールを解決します。署名鍵はTermuxホームの `~/.android-ai-appmaker/release.keystore` に初回生成し、外部へ送信しません。APKはデバッグ目的のローカル署名です。
+setup.shはすべてのプロジェクトファイルを同じimmutable commit SHAから取得します。Android platform archiveとBuild Tools archiveはURL、内部path、SHA-256を固定して展開前に検証します。必須Termux packageはcurl、unzip、python、openjdk-21だけで、openssh、Node.js、Codexは初心者ルートの必須依存ではありません。Web serverは127.0.0.1だけにbindし、Host/Origin、起動時CSRF token、Content-Type、POST size、prompt length、ビルド排他、subprocess timeout、APK署名検証を行います。
 
 詳細は [docs/architecture.md](docs/architecture.md)、[docs/security.md](docs/security.md)、[docs/troubleshooting.md](docs/troubleshooting.md) を参照してください。
 
-## 動作確認の状態
+## 確認状態
 
-Linux上でシェル構文、固定URLからの取得経路、127.0.0.1 Web UIを確認済みです。Android実機でのAPKビルド・インストールは未確認です。
-
-Android 10 / ARM64のTermuxでは、公式standalone installer（`curl -fsSL https://chatgpt.com/codex/install.sh | sh`）でCodex CLI 0.151.0の導入と `codex login status` の実行を確認しました（未ログイン状態）。公式npm packageは、同端末のTermuxリポジトリミラーが利用できずNode.js/npmを導入できなかったため未確認です。第三者forkは使用していません。
-
-## 上級者向け補助機能
-
-PCから接続したい場合だけ、上級者向け追加手順として `connect.ps1` とTermux SSHを利用できます。初心者向けsetupではopensshを導入しません。
-
-## Contributing
-
-バグ報告、対応端末の情報、改善Pull Requestを歓迎します。PR前の過度な手続きは求めません。AIで生成した修正も歓迎しますが、提出者自身で内容を確認し、動作確認した範囲をPR本文に記載してください。セキュリティ上の問題は、公開Issueに機密情報を書かず、非公開の連絡手段で報告してください。詳しくは [CONTRIBUTING.md](CONTRIBUTING.md) を参照してください。
+Linux上で、archive HTTP 200、内部path、SHA-256、Java、D8、aapt2、zipalign、apksigner、APK verify、localhost health checkを確認しています。Android実機でのTermux fresh setup、APKインストール、アプリ起動、Android unknown-source確認は **UNVERIFIED** です。Codexログイン済みの自由生成も **UNVERIFIED** です。
 
 ## License
 
-MIT Licenseで公開しています。利用、改変、再配布が可能です。無保証で提供しています。詳細は [LICENSE](LICENSE) を参照してください。
+MIT License。詳細は [LICENSE](LICENSE) を参照してください。

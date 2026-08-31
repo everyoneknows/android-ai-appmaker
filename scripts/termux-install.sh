@@ -1,41 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
-pkg update -y
-pkg install -y curl git python nodejs clang openjdk-21 zip unzip aapt2 apksigner zipalign
-mkdir -p "$HOME/.local/bin" "$HOME/android-ai-appmaker/out"
-sdk="$HOME/.android-ai-appmaker/sdk"
-if [ ! -f "$sdk/platforms/android-35/android.jar" ]; then
-  mkdir -p "$sdk/platforms/android-35"
-  curl -fsSL https://dl.google.com/android/repository/platform-35_r02.zip -o "$HOME/.android-ai-appmaker/platform.zip"
-  unzip -q -j "$HOME/.android-ai-appmaker/platform.zip" 'android-35/android.jar' -d "$sdk/platforms/android-35"
-fi
-d8jar="$sdk/build-tools/35.0.0/lib/d8.jar"
-if [ ! -f "$d8jar" ]; then
-  mkdir -p "$(dirname "$d8jar")"
-  buildtools="$HOME/.android-ai-appmaker/build-tools.zip"
-  curl -fsSL https://dl.google.com/android/repository/build-tools_r35.0.0-linux.zip -o "$buildtools"
-  unzip -q -j "$buildtools" 'android-15/lib/d8.jar' -d "$(dirname "$d8jar")"
-fi
-codex_ok=false
-if command -v codex >/dev/null 2>&1; then codex_ok=true; fi
-if [ "$codex_ok" = false ]; then
-  echo '公式standalone installerを試します。'
-  if curl -fsSL https://chatgpt.com/codex/install.sh | sh; then
-    hash -r 2>/dev/null || true
-    command -v codex >/dev/null 2>&1 && codex_ok=true
-  fi
-fi
-if [ "$codex_ok" = false ] && command -v npm >/dev/null 2>&1; then
-  echo '公式npm packageを試します。'
-  if npm install -g @openai/codex; then
-    hash -r 2>/dev/null || true
-    command -v codex >/dev/null 2>&1 && codex_ok=true
-  fi
-fi
-if [ "$codex_ok" = true ]; then
-  echo '公式Codex CLIを導入または検出しました。未認証なら codex login を実行してください。'
-else
-  echo '公式standalone installer/npm packageはいずれも利用できませんでした。第三者forkは使用しません。' >&2
-  echo 'テンプレートモードでWeb UIとAPK生成を利用できます。' >&2
-fi
-echo 'Web UI: http://127.0.0.1:8765/'
+state="$HOME/.android-ai-appmaker"; sdk="$state/sdk"; mkdir -p "$state" "$sdk"
+required='curl unzip python openjdk-21'; pkg update -y
+for package in $required; do
+  pkg install -y "$package" >/dev/null || { echo "必須パッケージを導入できませんでした: $package" >&2; exit 1; }
+  case "$package" in curl) command -v curl;; unzip) command -v unzip;; python) command -v python;; openjdk-21) command -v javac;; esac >/dev/null || { echo "コマンドが見つかりません: $package" >&2; exit 1; }
+done
+download_verify() { url="$1"; sha="$2"; out="$3"; tmp="$out.part"; curl -fL --retry 3 "$url" -o "$tmp"; printf '%s  %s\n' "$sha" "$tmp" | sha256sum -c - >/dev/null || { rm -f "$tmp"; echo "SHA-256検証に失敗しました: $url" >&2; exit 1; }; mv -f "$tmp" "$out"; }
+platform="$state/platform-35_r02.zip"; [ -f "$platform" ] || download_verify 'https://dl.google.com/android/repository/platform-35_r02.zip' '0988cacad01b38a18a47bac14a0695f246bc76c1b06c0eeb8eb0dc825ab0c8e0' "$platform"
+mkdir -p "$sdk/platforms/android-35"; unzip -p "$platform" 'android-35/android.jar' > "$sdk/platforms/android-35/android.jar.part"; test -s "$sdk/platforms/android-35/android.jar.part"; mv -f "$sdk/platforms/android-35/android.jar.part" "$sdk/platforms/android-35/android.jar"
+bt="$state/build-tools_r35_linux.zip"; [ -f "$bt" ] || download_verify 'https://dl.google.com/android/repository/build-tools_r35_linux.zip' 'bd3a4966912eb8b30ed0d00b0cda6b6543b949d5ffe00bea54c04c81e1561d88' "$bt"
+btroot="$sdk/build-tools/35.0.0"; mkdir -p "$btroot/lib"; extract="$state/build-tools.extract"; rm -rf "$extract"; mkdir -p "$extract"; unzip -q "$bt" 'android-15/*' -d "$extract"; test -s "$extract/android-15/lib/d8.jar"; test -s "$extract/android-15/aapt2"; test -s "$extract/android-15/apksigner"; test -s "$extract/android-15/zipalign"; cp -R "$extract/android-15/." "$btroot/"; rm -rf "$extract"
+chmod +x "$btroot/aapt2" "$btroot/apksigner" "$btroot/zipalign"; mkdir -p "$HOME/android-ai-appmaker/out"
+echo 'Android build toolsの準備が完了しました（Codexは初回電卓に不要です）。'
