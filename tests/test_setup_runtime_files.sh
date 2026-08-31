@@ -51,7 +51,7 @@ printf 'fixture-apk\n' > "$HOME/android-ai-appmaker/out/latest/app.apk"
 EOF
 chmod +x "$tmp/fixture/scripts/termux-install.sh" "$tmp/fixture/bin/appmaker"
 
-cat > "$tmp/bin/pkg" <<'EOF'
+cat > "$tmp/bin/apt-get" <<'EOF'
 #!/usr/bin/env bash
 exit 0
 EOF
@@ -84,7 +84,7 @@ if [[ "$url" == http://fixture.invalid/raw/* ]]; then
 fi
 exec /usr/bin/curl -fsS "$url"
 EOF
-chmod +x "$tmp/bin/pkg" "$tmp/bin/python" "$tmp/bin/curl"
+chmod +x "$tmp/bin/apt-get" "$tmp/bin/python" "$tmp/bin/curl"
 
 line="$(awk '/^curl -fsSL https:\/\/github\.com\/everyoneknows\/android-ai-appmaker\/raw\/[0-9a-f]{40}\/setup\.sh \| bash$/{print; exit}' "$root/README.md")"
 [ -n "$line" ] || { echo 'README bootstrap line missing' >&2; exit 1; }

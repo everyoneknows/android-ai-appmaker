@@ -30,19 +30,16 @@ with tempfile.TemporaryDirectory() as home:
     assert status == 200
     csrf = __import__("json").loads(body)["csrf"]
     common = {"Origin": "http://127.0.0.1:8765", "Content-Type": "application/json", "X-CSRF-Token": csrf}
-    assert request("GET", "/install")[0] == 405
-    assert request("POST", "/install", {"Content-Type": "application/json", "X-CSRF-Token": csrf})[0] == 403
-    assert request("POST", "/install", {**common, "Origin": "http://evil.invalid"})[0] == 403
-    assert request("POST", "/install", {**common, "X-CSRF-Token": "wrong"})[0] == 403
-    assert request("POST", "/install", {"Origin": common["Origin"], "Content-Type": "text/plain", "X-CSRF-Token": csrf})[0] == 415
+    assert request("GET", "/install")[0] == 404
     assert request("POST", "/install", common)[0] == 404
     apk = Path(home) / "android-ai-appmaker/out/latest/app.apk"
     apk.parent.mkdir(parents=True)
     apk.write_bytes(b"apk")
-    opened = []
-    server.subprocess.Popen = lambda args: opened.append(args)
-    assert request("POST", "/install", common)[0] == 200
-    assert opened and opened[0][0] == "termux-open"
+    status, body = request("GET", "/apk")
+    assert status == 200
+    assert body == b"apk"
+    # APK distribution is a fixed file response, never a user-controlled path.
+    assert request("GET", "/apk?path=../../etc/passwd")[0] == 404
     httpd.shutdown()
     thread.join(timeout=3)
 print("web security integration checks passed")

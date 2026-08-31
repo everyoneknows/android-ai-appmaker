@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
 state="$HOME/.android-ai-appmaker"; sdk="$state/sdk"; mkdir -p "$state" "$sdk"
-required=(curl unzip zip python openjdk-25 coreutils aapt aapt2); pkg update -y
+required=(curl unzip zip python openjdk-25 coreutils aapt aapt2); apt-get update -y
 for package in "${required[@]}"; do
-  pkg install -y "$package" >/dev/null || { echo "必須パッケージを導入できませんでした: $package" >&2; exit 1; }
+  apt-get install -y "$package" || { echo "必須パッケージを導入できませんでした: $package" >&2; exit 1; }
   case "$package" in curl) command -v curl;; unzip) command -v unzip;; zip) command -v zip;; python) command -v python;; openjdk-25) :;; coreutils) command -v realpath && command -v readlink && command -v sha256sum && command -v find && command -v xargs;; aapt|aapt2) command -v "$package";; esac >/dev/null || { echo "コマンドが見つかりません: $package" >&2; exit 1; }
 done
 prefix="${PREFIX:?Termux PREFIXがありません}"
