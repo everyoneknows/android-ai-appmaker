@@ -8,12 +8,12 @@
 
 最初の例として、時計＋ストップウォッチを作ってみます。
 
-> 開発中のため、下記URLの `YOUR_GITHUB_USER` と `COMMIT_OR_TAG` は公開後に置き換えます。公開版では必ず確認済みtagまたはcommitを指定してください。
+> 公開版は確認済みコミットを固定参照します。
 
 ### 1. Termuxで貼る1行
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USER/android-ai-appmaker/COMMIT_OR_TAG/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/ab25bfc/setup.sh | bash
 ```
 
 setupはroot、sudo、Androidシステム領域、bootloaderを使わず、Termuxのホーム以下だけを変更します。SSHパスワードはTermuxが尋ねる場合だけ入力してください。OpenAIのログインやAPIキーは表示・保存・コミットしません。
@@ -21,7 +21,7 @@ setupはroot、sudo、Androidシステム領域、bootloaderを使わず、Termu
 ### 2. PCのPowerShellで貼る1行
 
 ```powershell
-irm https://raw.githubusercontent.com/YOUR_GITHUB_USER/android-ai-appmaker/COMMIT_OR_TAG/connect.ps1 | iex
+irm https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/ab25bfc/connect.ps1 | iex
 ```
 
 同一Wi-Fiのプライベートネットワーク上で、Termux SSHの8022番ポートを探索して接続し、`appmaker`を起動します。Windows DefenderやWi-Fi分離設定によって探索できない場合は、表示された候補から選択できます。IPやポートを通常は手入力しません。
