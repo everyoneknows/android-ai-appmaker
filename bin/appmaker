@@ -3,6 +3,7 @@ set -euo pipefail
 ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 prompt="${*:-}"
 if [ -z "$prompt" ]; then printf '作りたいアプリを日本語で入力してください: '; IFS= read -r prompt; fi
+[ -n "$prompt" ] || { echo '仕様が空です' >&2; exit 2; }
 work="$HOME/android-ai-appmaker/workspace"
 mkdir -p "$work"
 if [ "${APPMAKER_AI:-auto}" != none ] && command -v codex >/dev/null 2>&1; then
