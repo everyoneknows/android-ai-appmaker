@@ -1,0 +1,18 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+prompt="${*:-}"
+if [ -z "$prompt" ]; then printf '作りたいアプリを日本語で入力してください: '; IFS= read -r prompt; fi
+work="$HOME/android-ai-appmaker/workspace"
+mkdir -p "$work"
+if [ "${APPMAKER_AI:-auto}" != none ] && command -v codex >/dev/null 2>&1; then
+  echo '公式Codex CLIを起動します。生成物はこのworkspace内に限定してください。'
+  (cd "$work" && "$ROOT/scripts/ai-adapter.sh" exec --full-auto "日本語の依頼: $prompt. Android Studio/Gradleなしで、$work内にAndroid Javaソースを生成し、完了後 builder/build-apk.sh でAPKを作成してください。ネットワーク権限は追加しないでください。") || echo 'Codex CLIは終了しました。サンプルテンプレートを使います。'
+fi
+if [ ! -f "$work/AndroidManifest.xml" ]; then
+  cp "$ROOT/examples/stopwatch-clock/AndroidManifest.xml" "$work/"
+  mkdir -p "$work/src/com/example/stopwatch"
+  cp "$ROOT/examples/stopwatch-clock/src/com/example/stopwatch/MainActivity.java" "$work/src/com/example/stopwatch/"
+fi
+"$ROOT/builder/build-apk.sh" "$work" "$HOME/android-ai-appmaker/out/app.apk"
+echo "APKを生成しました: $HOME/android-ai-appmaker/out/app.apk"
