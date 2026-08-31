@@ -8,10 +8,12 @@ LOG_PATH=Path.home()/'.android-ai-appmaker'/'web.log'
 LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(filename=LOG_PATH, level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
 logger=logging.getLogger(__name__)
-def ai_state():
- if os.environ.get('APPMAKER_AI')=='none' or not shutil.which('codex'): return 'unavailable'
- try: return 'available' if subprocess.run(['codex','login','status'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=10).returncode==0 else 'login_required'
- except (OSError,subprocess.TimeoutExpired): return 'unavailable'
+def ai_status():
+ if os.environ.get('APPMAKER_AI')=='none': return 'unavailable', 'disabled'
+ if not shutil.which('codex'): return 'unavailable', 'not_installed'
+ try:
+  return ('available', '') if subprocess.run(['codex','login','status'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=10).returncode==0 else ('login_required', '')
+ except (OSError, subprocess.TimeoutExpired): return 'unavailable', 'not_detected'
 class Handler(BaseHTTPRequestHandler):
  def log_message(self,*args): pass
  def host_ok(self): return self.headers.get('Host','') in {f'127.0.0.1:{PORT}',f'localhost:{PORT}'}
@@ -22,7 +24,8 @@ class Handler(BaseHTTPRequestHandler):
   if not self.host_ok(): self.send_error(400,'invalid host'); return
   if self.path=='/health': self.send_data(200,'text/plain; charset=utf-8',b'ok\n')
   elif self.path=='/': self.send_data(200,'text/html; charset=utf-8',(ROOT/'web/index.html').read_bytes())
-  elif self.path=='/api/status': self.send_json(200,{'ai':ai_state(),'csrf':TOKEN,'apk':str(APK_PATH) if APK_PATH.is_file() else ''})
+  elif self.path=='/api/status':
+   ai, reason=ai_status(); self.send_json(200,{'ai':ai,'reason':reason,'csrf':TOKEN,'apk':str(APK_PATH) if APK_PATH.is_file() else ''})
   elif self.path=='/apk':
    if not APK_PATH.is_file(): self.send_error(404,'APKがまだありません'); return
    data=APK_PATH.read_bytes(); self.send_response(200)
