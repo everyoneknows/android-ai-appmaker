@@ -27,10 +27,17 @@ files=(
   'examples/calculator/AndroidManifest.xml'
   'examples/calculator/src/com/example/calculator/MainActivity.java'
 )
+part_cleanup() { find "$base" -type f -name '*.part' -delete 2>/dev/null || true; }
+trap part_cleanup EXIT
 for file in "${files[@]}"; do
   mkdir -p "$base/$(dirname -- "$file")"
-  curl -fsSL --retry 3 "$repo/$file" -o "$base/$file"
+  part="$base/$file.part"
+  rm -f -- "$part"
+  curl -fsSL --retry 3 "$repo/$file" -o "$part"
+  test -s "$part"
+  mv -f -- "$part" "$base/$file"
 done
+trap - EXIT
 chmod +x "$base"/scripts/*.sh "$base"/builder/build-apk.sh "$base"/bin/appmaker
 "$base/scripts/termux-install.sh"
 ln -sfn "$base/bin/appmaker" "$HOME/.local/bin/appmaker"

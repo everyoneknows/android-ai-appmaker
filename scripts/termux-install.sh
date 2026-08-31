@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
 state="$HOME/.android-ai-appmaker"; sdk="$state/sdk"; mkdir -p "$state" "$sdk"
-required=(curl unzip python openjdk-21); pkg update -y
+required=(curl unzip python openjdk-21 coreutils); pkg update -y
 for package in "${required[@]}"; do
   pkg install -y "$package" >/dev/null || { echo "必須パッケージを導入できませんでした: $package" >&2; exit 1; }
-  case "$package" in curl) command -v curl;; unzip) command -v unzip;; python) command -v python;; openjdk-21) command -v javac;; esac >/dev/null || { echo "コマンドが見つかりません: $package" >&2; exit 1; }
+  case "$package" in curl) command -v curl;; unzip) command -v unzip;; python) command -v python;; openjdk-21) command -v javac;; coreutils) command -v realpath && command -v readlink && command -v sha256sum;; esac >/dev/null || { echo "コマンドが見つかりません: $package" >&2; exit 1; }
 done
 download_verify() { url="$1"; sha="$2"; out="$3"; tmp="$out.part"; curl -fL --retry 3 "$url" -o "$tmp"; printf '%s  %s\n' "$sha" "$tmp" | sha256sum -c - >/dev/null || { rm -f "$tmp"; echo "SHA-256検証に失敗しました: $url" >&2; exit 1; }; mv -f "$tmp" "$out"; }
 platform="$state/platform-35_r02.zip"; [ -f "$platform" ] && printf '%s  %s\n' '0988cacad01b38a18a47bac14a0695f246bc76c1b06c0eeb8eb0dc825ab0c8e0' "$platform" | sha256sum -c - >/dev/null || download_verify 'https://dl.google.com/android/repository/platform-35_r02.zip' '0988cacad01b38a18a47bac14a0695f246bc76c1b06c0eeb8eb0dc825ab0c8e0' "$platform"
