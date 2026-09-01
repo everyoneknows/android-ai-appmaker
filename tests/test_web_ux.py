@@ -10,12 +10,20 @@ from pathlib import Path
 
 root = Path(__file__).parents[1]
 html = (root / 'web/index.html').read_text()
-assert 'ダウンロード完了の通知が表示された場合は、その通知をタップして開けることもあります。' in html
-assert 'https://chatgpt.com/codex/install.sh' in html
-assert 'data-copy="codex login"' in html
-assert 'data-copy="curl -fsSL https://chatgpt.com/codex/install.sh | sh"' in html
-assert 'id="step3"' not in html
-assert "document.querySelector('#welcome').style.display='none';document.querySelector('#next').style.display='block'" in html
+assert '通知またはChromeの「ダウンロード」を開きます。' in html
+assert '🎉 はじめてのAndroidアプリが完成しました' in html
+assert 'この電卓はWebアプリではありません' in html
+assert 'Androidスマホ自身でビルドしたAPK' in html
+assert 'スマホの中にAndroidアプリを作れる開発環境' in html
+assert '次はCodexです！' in html
+assert '次は、AIにアプリを作らせます。' in html
+assert 'Termuxに戻り、次のコマンドをコピー＆ペーストしてください。' in html
+assert '導入コマンドはまだ確定していません' in html
+assert 'ここまでが第1幕です。' in html
+assert 'https://chatgpt.com/codex/install.sh' not in html
+assert 'codex login' not in html
+assert 'id="copy-command"' in html
+assert "location.href='/?completed=1'" in html
 with tempfile.TemporaryDirectory() as home, tempfile.TemporaryDirectory() as tools:
     os.environ['HOME'] = home
     codex = Path(tools) / 'codex'
