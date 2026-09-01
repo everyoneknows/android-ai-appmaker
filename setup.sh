@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
-# Immutable bootstrap for the rc15 content commit.
+# Immutable bootstrap for the rc17 content commit.
 case "$(id -u)" in 0) echo 'rootでは実行しません。Termuxの通常ユーザーで実行してください。' >&2; exit 1;; esac
 [ -n "${PREFIX:-}" ] || { echo 'Termux上で実行してください。' >&2; exit 1; }
-DEFAULT_APPMAKER_REF="fa5ca5a8e04c5cbf9cfa48f5a6e36dd6f7585261"
+DEFAULT_APPMAKER_REF="933c321f52662202a956dc414ed9a9f24aacfae6"
 APPMAKER_REF="${APPMAKER_REF:-$DEFAULT_APPMAKER_REF}"
 [ "${#APPMAKER_REF}" -eq 40 ] && printf '%s' "$APPMAKER_REF" | grep -Eq '^[0-9a-f]{40}$' || { echo 'APPMAKER_REFがimmutable commit SHAではありません。開発者向けoverrideを確認してください。' >&2; exit 1; }
 repo="${APPMAKER_REPO_URL:-https://raw.githubusercontent.com/everyoneknows/android-ai-appmaker/$APPMAKER_REF}"
