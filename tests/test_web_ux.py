@@ -16,13 +16,15 @@ assert 'この電卓はWebアプリではありません' in html
 assert 'Androidスマホ自身でビルドしたAPK' in html
 assert 'スマホの中にAndroidアプリを作れる開発環境' in html
 assert '次はCodexです！' in html
-assert '次は、AIにアプリを作らせます。' in html
-assert 'Termuxに戻り、次のコマンドをコピー＆ペーストしてください。' in html
-assert '導入コマンドはまだ確定していません' in html
-assert 'ここまでが第1幕です。' in html
+assert '第2幕では、Codex CLIをスマホに入れて、AIにAndroidアプリを作らせます。' in html
+assert 'ここまでが第1幕です。第2幕へ続きます。' in html
+assert '次は、AIにアプリを作らせます。' not in html
+assert 'Termuxに戻り、次のコマンドをコピー＆ペーストしてください。' not in html
+assert 'Codex導入コマンド（v0.3.0で確定予定）' not in html
+assert '導入コマンドはまだ確定していません' not in html
 assert 'https://chatgpt.com/codex/install.sh' not in html
 assert 'codex login' not in html
-assert 'id="copy-command"' in html
+assert 'id="copy-command"' not in html
 assert "location.href='/?completed=1'" in html
 with tempfile.TemporaryDirectory() as home, tempfile.TemporaryDirectory() as tools:
     os.environ['HOME'] = home
