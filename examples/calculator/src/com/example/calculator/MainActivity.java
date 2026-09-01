@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
     private void addKey(GridLayout grid, String key) {
         int color = key.equals("=") ? Color.rgb(255, 209, 102) : key.matches("[÷×−＋]") ? Color.rgb(75, 85, 105) : Color.rgb(52, 52, 52);
         Button button = actionButton(key, color, key.equals("=") ? Color.rgb(25, 25, 25) : Color.WHITE); button.setTextSize(20); button.setOnClickListener(v -> tap(key));
-        GridLayout.LayoutParams params = new GridLayout.LayoutParams(); params.width = 0; params.height = dp(64); params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f); params.setMargins(dp(3), dp(3), dp(3), dp(3)); grid.addView(button, params);
+        GridLayout.LayoutParams params = new GridLayout.LayoutParams(); params.width = 0; params.height = dp(64); params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, key.equals("0") ? 2 : 1, 1f); params.setMargins(dp(3), dp(3), dp(3), dp(3)); grid.addView(button, params);
     }
     private Button actionButton(String text, int background, int foreground) {
         Button button = new Button(this); button.setText(text); button.setTextColor(foreground); button.setTextSize(16); button.setGravity(Gravity.CENTER); button.setAllCaps(false); button.setMinHeight(0); button.setMinWidth(0); button.setPadding(0, 0, 0, 0); button.setTypeface(Typeface.DEFAULT, Typeface.BOLD); button.setBackground(round(background, dp(14))); return button;
