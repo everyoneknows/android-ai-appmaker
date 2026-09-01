@@ -2,6 +2,7 @@
 import json, logging, os, secrets, shutil, subprocess, threading, traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import urlsplit
 ROOT=Path(__file__).resolve().parent.parent; PORT=8765; TOKEN=secrets.token_urlsafe(32); LOCK=threading.Lock(); MAX_BODY=64*1024; MAX_PROMPT=4000
 APK_PATH=Path.home()/'android-ai-appmaker/out/latest/app.apk'
 LOG_PATH=Path.home()/'.android-ai-appmaker'/'web.log'
@@ -22,11 +23,12 @@ class Handler(BaseHTTPRequestHandler):
  def send_json(self,c,o): self.send_data(c,'application/json; charset=utf-8',json.dumps(o,ensure_ascii=False).encode())
  def do_GET(self):
   if not self.host_ok(): self.send_error(400,'invalid host'); return
-  if self.path=='/health': self.send_data(200,'text/plain; charset=utf-8',b'ok\n')
-  elif self.path=='/': self.send_data(200,'text/html; charset=utf-8',(ROOT/'web/index.html').read_bytes())
-  elif self.path=='/api/status':
+  path=urlsplit(self.path).path
+  if path=='/health': self.send_data(200,'text/plain; charset=utf-8',b'ok\n')
+  elif path=='/': self.send_data(200,'text/html; charset=utf-8',(ROOT/'web/index.html').read_bytes())
+  elif path=='/api/status':
    ai, reason=ai_status(); self.send_json(200,{'ai':ai,'reason':reason,'csrf':TOKEN,'apk':str(APK_PATH) if APK_PATH.is_file() else ''})
-  elif self.path=='/apk':
+  elif path=='/apk':
    if not APK_PATH.is_file(): self.send_error(404,'APKがまだありません'); return
    data=APK_PATH.read_bytes(); self.send_response(200)
    self.send_header('Content-Type','application/vnd.android.package-archive')

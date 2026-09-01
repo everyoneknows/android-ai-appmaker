@@ -39,7 +39,8 @@ with tempfile.TemporaryDirectory() as home:
     assert status == 200
     assert body == b"apk"
     # APK distribution is a fixed file response, never a user-controlled path.
-    assert request("GET", "/apk?path=../../etc/passwd")[0] == 404
+    status, body = request("GET", "/apk?path=../../etc/passwd")
+    assert status == 200 and body == b"apk"
     httpd.shutdown()
     thread.join(timeout=3)
 print("web security integration checks passed")
