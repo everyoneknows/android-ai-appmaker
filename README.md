@@ -10,7 +10,7 @@
 ### 1行セットアップ
 
 ```sh
-curl -fsSL https://github.com/everyoneknows/android-ai-appmaker/raw/a9a57cf6f453ec9ceb0192b21b25d6761f60c400/setup.sh | bash
+curl -fsSL https://github.com/everyoneknows/android-ai-appmaker/raw/2c38f5655ccc27f3eb6f35c5be9a8d825a98f917/setup.sh | bash
 ```
 
 rootは不要です。setupは自動的に電卓をbuild・署名し、`http://127.0.0.1:8765/` をブラウザで開きます。APKをダウンロードし、Android Package Installerで必要な「この提供元を許可」「インストール」を利用者が確認してください。電卓の「次の開発に進む」ボタンで、完了説明のWeb UIへ戻れます。
