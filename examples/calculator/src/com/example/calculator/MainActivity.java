@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
     private TextView label(String text, int size, int color) { TextView view = new TextView(this); view.setText(text); view.setTextSize(size); view.setTextColor(color); return view; }
     private void addKey(GridLayout grid, String key) {
         int color = key.equals("=") ? Color.rgb(255, 209, 102) : key.matches("[÷×−＋]") ? Color.rgb(75, 85, 105) : Color.rgb(52, 52, 52);
-        Button button = actionButton(key, color, Color.WHITE); button.setTextSize(20); button.setOnClickListener(v -> tap(key));
+        Button button = actionButton(key, color, key.equals("=") ? Color.rgb(25, 25, 25) : Color.WHITE); button.setTextSize(20); button.setOnClickListener(v -> tap(key));
         GridLayout.LayoutParams params = new GridLayout.LayoutParams(); params.width = 0; params.height = dp(64); params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f); params.setMargins(dp(3), dp(3), dp(3), dp(3)); grid.addView(button, params);
     }
     private Button actionButton(String text, int background, int foreground) {
